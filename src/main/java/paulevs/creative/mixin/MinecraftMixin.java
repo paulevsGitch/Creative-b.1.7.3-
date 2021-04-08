@@ -16,6 +16,5 @@ public class MinecraftMixin {
 		CreativeTabs.initVanilla();
 		TabRegister.EVENT.getInvoker().registerTabs();
 		CreativeTabs.initTabs();
-		System.out.println(CreativeTabs.getPagesCount());
 	}
 }

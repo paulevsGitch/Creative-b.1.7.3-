@@ -2,6 +2,7 @@ package paulevs.creative.mixin;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -328,8 +329,8 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 			int slotX = MathHelper.floor((mouseX - posX - 8) / 18F);
 			int slotY = MathHelper.floor((mouseY - posY - 14) / 18F);
 			
+			net.minecraft.entity.player.PlayerInventory inventory = this.minecraft.player.inventory;
 			if (slotY >= 0 && slotY < 7 && slotX >= 0 && slotX < 8) {
-				net.minecraft.entity.player.PlayerInventory inventory = this.minecraft.player.inventory;
 				int index = slotY * 8 + slotX + rowIndex;
 				if (index < items.size()) {
 					ItemInstance item = items.get(index);
@@ -360,6 +361,9 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 			
 			slotY = MathHelper.floor((mouseY - posY - 142) / 18);
 			if (slotY == 0 && slotX >= 0 && slotX < 9) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+					inventory.main[slotX] = null;
+				}
 				super.mouseClicked(mouseX, mouseY, button);
 			}
 		}

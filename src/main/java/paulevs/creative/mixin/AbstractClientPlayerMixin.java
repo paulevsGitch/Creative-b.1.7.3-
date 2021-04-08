@@ -38,7 +38,6 @@ public abstract class AbstractClientPlayerMixin extends PlayerBase {
 					client.setPositionAndAngles(client.x, client.y - client.standingEyeHeight + 0.01, client.z, client.yaw, client.pitch);
 					client.velocityY = 0.001;
 				}
-				System.out.println(player.isFlying());
 				info.cancel();
 			}
 		}

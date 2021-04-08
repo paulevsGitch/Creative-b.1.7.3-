@@ -9,8 +9,11 @@ Requires **[Fabric Legacy](https://github.com/calmilamsy/Cursed-Fabric-MultiMC)*
 - Separate creative and survival worlds;
 - Modern-like creative GUI (based on beta 1.8 and current creative GUI)
 - Creative invulnurability;
-- Any block destruction;
 - Cretive flight (pressing 'G' key).
+
+## Planned Features:
+- Any block destruction;
+- Smooth creative flight;
 
 ## How to install (MultiMC):
 - Download [MultiMC instance](https://github.com/calmilamsy/Cursed-Fabric-MultiMC) and import it as zip

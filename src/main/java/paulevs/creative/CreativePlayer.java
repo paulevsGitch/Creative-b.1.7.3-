@@ -12,12 +12,4 @@ public interface CreativePlayer {
 	public int getJumpTicks();
 	
 	public void setJumpTicks(int ticks);
-	
-	/*public boolean isFlyingKeyPressed();
-	
-	public boolean isSneakingKeyPressed();
-	
-	public void setFlyingKeyPressed(boolean value);
-	
-	public void setSneakingKeyPressed(boolean value);*/
 }

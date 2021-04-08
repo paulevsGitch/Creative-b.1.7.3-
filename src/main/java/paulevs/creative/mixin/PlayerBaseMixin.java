@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.block.BlockBase;
 import net.minecraft.entity.EntityBase;
 import net.minecraft.entity.Living;
 import net.minecraft.entity.player.PlayerBase;
@@ -20,8 +19,6 @@ public abstract class PlayerBaseMixin extends Living implements CreativePlayer {
 	private boolean isCreative;
 	private boolean flying;
 	private int jumpTicks;
-	//private boolean flyingPressed;
-	//private boolean sneakingPressed;
 	
 	public PlayerBaseMixin(Level arg) {
 		super(arg);
@@ -90,24 +87,13 @@ public abstract class PlayerBaseMixin extends Living implements CreativePlayer {
 			this.setFlying(false);
 		}
 		if (this.isCreative()) {
-			/*if (this.jumping) {
-				this.setJumpTicks(this.getJumpTicks() + 1);
-			}
-			else {
-				this.setJumpTicks(0);
-			}
-			if (getJumpTicks() > 10) {
-				this.setFlying(true);
-			}*/
 			if (this.isFlying() && !this.isSleeping()) {
-				//this.onGround = true;
-				//this.movementSpeed = 10F;
 				if (this.jumping) {
 					this.velocityY = MHelper.clamp(this.velocityY + 0.1, 0.1, 1.0);
 				}
 				else if (this.method_1373()) {
 					velocityY += 0.08;
-					this.velocityY = MHelper.clamp(this.velocityY - 0.1, -1.0, -0.1);
+					this.velocityY = MHelper.clamp(this.velocityY - 0.1, -0.3, -0.1);
 				}
 				else {
 					if (this.velocityY < 0.2 && this.velocityY > -0.2) {
@@ -117,13 +103,6 @@ public abstract class PlayerBaseMixin extends Living implements CreativePlayer {
 						this.velocityY *= 0.25;
 					}
 				}
-				
-				//this.field_1060 = 0.0F;
-				//this.field_1029 = 0.0F;
-				//this.field_1030 = 0.0F;
-				
-				//this.velocityX = MHelper.clamp(this.velocityX + MHelper.sign(this.velocityX) * 0.05, -1.5, 1.5);
-				//this.velocityZ = MHelper.clamp(this.velocityZ + MHelper.sign(this.velocityZ) * 0.05, -1.5, 1.5);
 				
 				if (this.onGround) {
 					this.setFlying(false);
@@ -135,27 +114,19 @@ public abstract class PlayerBaseMixin extends Living implements CreativePlayer {
 		}
 	}
 	
-	@Inject(method = "canRemoveBlock", at = @At("HEAD"), cancellable = true)
-	private void creative_canRemoveBlock(BlockBase arg, CallbackInfoReturnable<Boolean> info) {
+	/*@Inject(method = "canRemoveBlock", at = @At("HEAD"), cancellable = true)
+	private void creative_canRemoveBlock(BlockBase block, CallbackInfoReturnable<Boolean> info) {
 		if (this.isCreative()) {
 			info.setReturnValue(true);
 			info.cancel();
 		}
 	}
 	
-	/*public boolean isFlyingKeyPressed() {
-		return flyingPressed;
-	}
-	
-	public boolean isSneakingKeyPressed() {
-		return sneakingPressed;
-	}
-	
-	public void setFlyingKeyPressed(boolean value) {
-		flyingPressed = value;
-	}
-	
-	public void setSneakingKeyPressed(boolean value) {
-		sneakingPressed = value;
+	@Inject(method = "getStrengh", at = @At("HEAD"), cancellable = true)
+	private void creative_getStrengh(BlockBase block, CallbackInfoReturnable<Float> info) {
+		if (this.isCreative()) {
+			info.setReturnValue(10F);
+			info.cancel();
+		}
 	}*/
 }
