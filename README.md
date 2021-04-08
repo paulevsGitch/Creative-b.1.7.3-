@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/paulevsGitch/Creative-b.1.7.3-.svg)](https://jitpack.io/#paulevsGitch/Creative-b.1.7.3-)
 # Creative
 
 This mod adds a creative mode from modern MC versions to beta 1.7.3.
@@ -18,7 +19,7 @@ Requires **[Fabric Legacy](https://github.com/calmilamsy/Cursed-Fabric-MultiMC)*
 
 ## Mod Api
 Creative has a possibility for mods to add their own tabs, the simple tab can be done like this:
-```
+```java
 TabRegister.EVENT.register(new TabRegister() {
 	@Override
 	public void registerTabs() {
@@ -27,10 +28,11 @@ TabRegister.EVENT.register(new TabRegister() {
 	}
 });
 ```
-Where:
+**Where:**
 - YOUR_ITEM_ICON is an ItemInstance for display as a tab icon;
 - YOUR_ITEM_OR_BLOCK is an ItemInstance for your item;
 - YOUR_META is meta for your item, if your item don't have meta you can use:
-```
+
+```java
 new ItemInstance(YOUR_ITEM_OR_BLOCK)
-```.
+```
