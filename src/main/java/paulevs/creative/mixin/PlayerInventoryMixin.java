@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.block.BlockBase;
 import net.minecraft.client.gui.screen.container.ContainerBase;
 import net.minecraft.client.gui.screen.container.PlayerInventory;
 import net.minecraft.client.render.RenderHelper;
@@ -31,6 +32,7 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 	
 	private static ItemRenderer itemRenderer = new ItemRenderer();
 	private List<ItemInstance> items;
+	private boolean normalGUI;
 	private int mouseDelta;
 	private String selected;
 	private int rowIndex;
@@ -39,6 +41,9 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 	private boolean drag;
 	private int tabIndex;
 	private int tabPage;
+	
+	private ItemInstance creativeIcon;
+	private ItemInstance survivalIcon;
 	
 	public PlayerInventoryMixin(net.minecraft.container.ContainerBase container) {
 		super(container);
@@ -58,44 +63,20 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 		rowIndex = 0;
 		tabIndex = 0;
 		tabPage = 0;
+		creativeIcon = new ItemInstance(ItemBase.diamond);
+		survivalIcon = new ItemInstance(BlockBase.WORKBENCH);
 	}
 	
-	@Inject(method = "renderContainerBackground", at = @At("HEAD"), cancellable = true)
-	private void renderBackground(float f, CallbackInfo info) {
-		if (creative_isInCreative()) {
-			net.minecraft.entity.player.PlayerInventory inventory = this.minecraft.player.inventory;
-			
+	@Inject(method = "renderContainerBackground", at = @At("RETURN"), cancellable = true)
+	private void creative_renderBackgroundEnd(float f, CallbackInfo info) {
+		if (creative_isInCreative() && normalGUI) {
 			int texture = this.minecraft.textureManager.getTextureId("/assets/creative/textures/gui/creative_list.png");
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.minecraft.textureManager.bindTexture(texture);
+			
 			int posX = (this.width - this.containerWidth) / 2;
 			int posY = (this.height - this.containerHeight) / 2;
-			
-			int count = CreativeTabs.getTabCount(tabPage);
-			for (int i = 0; i < count; i++) {
-				if (i != tabIndex) {
-					this.blit(posX + 4 + i * 24, posY - 21, 176, 0, 24, 24);
-				}
-			}
-			
-			this.blit(posX, posY, 0, 0, this.containerWidth, this.containerHeight);
-			
-			this.blit(posX + 150, posY + 4, 208, 0, 9, 8);
-			if (tabPage == 0) {
-				this.fill(posX + 150, posY + 4, posX + 150 + 9, posY + 4 + 8, COLOR_FILLER);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			}
-			this.blit(posX + 160, posY + 4, 208, 8, 9, 8);
-			if (tabPage >= CreativeTabs.getPagesCount() - 1) {
-				this.fill(posX + 160, posY + 4, posX + 160 + 9, posY + 4 + 8, COLOR_FILLER);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			}
-			
-			int sliderX = posX + 154;
-			int sliderY = posY + 14 + MathHelper.floor(slider * 109);
-			this.blit(sliderX, sliderY, 240, 1, 14, 15);
-			
-			this.blit(posX + 4 + tabIndex * 24, posY - 21, 176, 0, 24, 24);
+			this.blit(posX + 173, posY + 138, 176, 32, 25, 24);
 			
 			GL11.glPushMatrix();
 			GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
@@ -104,78 +85,160 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glEnable(32826);
 			
-			for (int i = 0; i < count; i++) {
-				CreativeTab tab = CreativeTabs.getTab(tabPage, i);
-				creative_renderItem(tab.getIcon(), posX + 8 + i * 24, posY - 17);
+			creative_renderItem(creativeIcon, posX + 173 + 4, posY + 114 + 4);
+			creative_renderItem(survivalIcon, posX + 173 + 4, posY + 138 + 4);
+			
+			int tabX = (int) mouseX - posX - 173;
+			int tabY = (int) mouseY - posY - 114;
+			if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+				creative_renderString("Creative");
 			}
 			
-			for (int i = 0; i < 56; i++) {
-				int index = rowIndex + i;
-				if (index >= 0 && index < items.size()) {
-					ItemInstance instance = items.get(index);
-					int x = posX + (i & 7) * 18 + 8;
-					int y = posY + (i / 8) * 18 + 14;
-					creative_renderItem(instance, x, y);
-				}
+			tabY = (int) mouseY - posY - 138;
+			if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+				creative_renderString("Inventory");
 			}
-			
-			for (int i = 0; i < 9; i++) {
-				ItemInstance item = inventory.main[i];
-				int x = posX + i * 18 + 8;
-				int y = posY + 142;
-				creative_renderItem(item, x, y);
-			}
-			
-			int slotX = MathHelper.floor((mouseX - posX - 8) / 18);
-			if (slotX >= 0) {
-				int slotY = MathHelper.floor((mouseY - posY - 14) / 18);
-				if (slotX < 8 && slotY >= 0 && slotY < 7) {
-					int x = slotX * 18 + posX + 8;
-					int y = slotY * 18 + posY + 14;
-					creative_renderSlotOverlay(x, y);
-					
-					int index = slotY * 8 + slotX + rowIndex;
-					ItemInstance item = index < items.size() ? items.get(index) : null;
-					creative_renderName(0, 0, item);
-				}
-				slotY = MathHelper.floor((mouseY - posY - 142) / 18);
-				if (slotX < 9 && slotY == 0) {
-					int x = slotX * 18 + posX + 8;
-					int y = slotY * 18 + posY + 142;
-					creative_renderSlotOverlay(x, y);
-					creative_renderName(0, 0, inventory.main[slotX]);
-				}
-			}
-			
-			int tabX = ((int) mouseX - posX - 4) / 24;
-			int tabY = (int) mouseY - posY + 21;
-			if (tabX >= 0 && tabX < count && tabY >= 0 && tabY < 24) {
-				CreativeTab tab = CreativeTabs.getTab(tabPage, tabX);
-				creative_renderString(0, 0, tab.getTranslatedName());
-			}
-			
-			info.cancel();
 		}
 	}
 	
-	private void creative_renderName(int slotX, int slotY, ItemInstance item) {
+	@Inject(method = "renderContainerBackground", at = @At("HEAD"), cancellable = true)
+	private void creative_renderBackgroundStart(float f, CallbackInfo info) {
+		if (creative_isInCreative()) {
+			int posX = (this.width - this.containerWidth) / 2;
+			int posY = (this.height - this.containerHeight) / 2;
+			
+			int texture = this.minecraft.textureManager.getTextureId("/assets/creative/textures/gui/creative_list.png");
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			this.minecraft.textureManager.bindTexture(texture);
+			
+			if (normalGUI) {
+				this.blit(posX + 173, posY + 114, 176, 32, 25, 24); // Survival
+			}
+			else {
+				net.minecraft.entity.player.PlayerInventory inventory = this.minecraft.player.inventory;
+				
+				int count = CreativeTabs.getTabCount(tabPage);
+				for (int i = 0; i < count; i++) {
+					if (i != tabIndex) {
+						this.blit(posX + 4 + i * 24, posY - 21, 176, 0, 24, 24);
+					}
+				}
+				
+				this.blit(posX + 173, posY + 138, 176, 32, 25, 24);
+				this.blit(posX, posY, 0, 0, this.containerWidth, this.containerHeight);
+				this.blit(posX + 173, posY + 114, 176, 32, 25, 24);
+				
+				this.blit(posX + 150, posY + 4, 208, 0, 9, 8);
+				if (tabPage == 0) {
+					this.fill(posX + 150, posY + 4, posX + 150 + 9, posY + 4 + 8, COLOR_FILLER);
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				}
+				this.blit(posX + 160, posY + 4, 208, 8, 9, 8);
+				if (tabPage >= CreativeTabs.getPagesCount() - 1) {
+					this.fill(posX + 160, posY + 4, posX + 160 + 9, posY + 4 + 8, COLOR_FILLER);
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				}
+				
+				int sliderX = posX + 154;
+				int sliderY = posY + 14 + MathHelper.floor(slider * 109);
+				this.blit(sliderX, sliderY, 240, 1, 14, 15);
+				
+				this.blit(posX + 4 + tabIndex * 24, posY - 21, 176, 0, 24, 24);
+				
+				GL11.glPushMatrix();
+				GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
+				RenderHelper.enableLighting();
+				GL11.glPopMatrix();
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				GL11.glEnable(32826);
+				
+				creative_renderItem(creativeIcon, posX + 173 + 4, posY + 114 + 4);
+				creative_renderItem(survivalIcon, posX + 173 + 4, posY + 138 + 4);
+				
+				for (int i = 0; i < count; i++) {
+					CreativeTab tab = CreativeTabs.getTab(tabPage, i);
+					creative_renderItem(tab.getIcon(), posX + 8 + i * 24, posY - 17);
+				}
+				
+				for (int i = 0; i < 56; i++) {
+					int index = rowIndex + i;
+					if (index >= 0 && index < items.size()) {
+						ItemInstance instance = items.get(index);
+						int x = posX + (i & 7) * 18 + 8;
+						int y = posY + (i / 8) * 18 + 14;
+						creative_renderItem(instance, x, y);
+					}
+				}
+				
+				for (int i = 0; i < 9; i++) {
+					ItemInstance item = inventory.main[i];
+					int x = posX + i * 18 + 8;
+					int y = posY + 142;
+					creative_renderItem(item, x, y);
+				}
+				
+				int slotX = MathHelper.floor((mouseX - posX - 8) / 18);
+				if (slotX >= 0) {
+					int slotY = MathHelper.floor((mouseY - posY - 14) / 18);
+					if (slotX < 8 && slotY >= 0 && slotY < 7) {
+						int x = slotX * 18 + posX + 8;
+						int y = slotY * 18 + posY + 14;
+						creative_renderSlotOverlay(x, y);
+						
+						int index = slotY * 8 + slotX + rowIndex;
+						ItemInstance item = index < items.size() ? items.get(index) : null;
+						creative_renderName(item);
+					}
+					slotY = MathHelper.floor((mouseY - posY - 142) / 18);
+					if (slotX < 9 && slotY == 0) {
+						int x = slotX * 18 + posX + 8;
+						int y = slotY * 18 + posY + 142;
+						creative_renderSlotOverlay(x, y);
+						creative_renderName(inventory.main[slotX]);
+					}
+				}
+				
+				int tabX = ((int) mouseX - posX - 4) / 24;
+				int tabY = (int) mouseY - posY + 21;
+				if (tabX >= 0 && tabX < count && tabY >= 0 && tabY < 24) {
+					CreativeTab tab = CreativeTabs.getTab(tabPage, tabX);
+					creative_renderString(tab.getTranslatedName());
+				}
+				
+				tabX = (int) mouseX - posX - 173;
+				tabY = (int) mouseY - posY - 114;
+				if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+					creative_renderString("Creative");
+				}
+				
+				tabY = (int) mouseY - posY - 138;
+				if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+					creative_renderString("Inventory");
+				}
+				
+				info.cancel();
+			}
+		}
+	}
+	
+	private void creative_renderName(ItemInstance item) {
 		if (item == null) {
 			return;
 		}
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		String name = ("" + TranslationStorage.getInstance().method_995(item.getTranslationKey())).trim();
-		creative_renderString(slotX, slotY, name);
+		creative_renderString(name);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
-	private void creative_renderString(int posX, int posY, String string) {
+	private void creative_renderString(String string) {
 		if (string == null) {
 			return;
 		}
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		if (string.length() > 0) {
-			int var9 = (int) mouseX - posX + 12;
-			int var10 = (int) mouseY - posY - 12;
+			int var9 = (int) mouseX + 12;
+			int var10 = (int) mouseY - 12;
 			int var11 = this.textManager.getTextWidth(string);
 			this.fillGradient(var9 - 3, var10 - 3, var9 + var11 + 3, var10 + 8 + 3, -1073741824, -1073741824);
 			this.textManager.drawTextWithShadow(string, var9, var10, -1);
@@ -185,7 +248,7 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 	
 	@Inject(method = "renderForeground", at = @At("HEAD"), cancellable = true)
 	private void creative_renderForeground(CallbackInfo info) {
-		if (creative_isInCreative()) {
+		if (creative_isInCreative() && !normalGUI) {
 			this.textManager.drawText(selected, 8, 4, 4210752);
 			info.cancel();
 		}
@@ -213,7 +276,7 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 	
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	public void creative_render(int mouseX, int mouseY, float delta, CallbackInfo info) {
-		if (creative_isInCreative()) {
+		if (creative_isInCreative() && !normalGUI) {
 			creative_mouseScroll();
 			
 			this.renderBackground();
@@ -260,8 +323,26 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 			int posX = (this.width - this.containerWidth) / 2;
 			int posY = (this.height - this.containerHeight) / 2;
 			
-			int tabX = ((int) mouseX - posX - 4) / 24;
-			int tabY = (int) mouseY - posY + 21;
+			int tabX = (int) mouseX - posX - 173;
+			int tabY = (int) mouseY - posY - 114;
+			if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+				normalGUI = false;
+				creative_playSound();
+			}
+			
+			tabY = (int) mouseY - posY - 138;
+			if (tabX >= 0 && tabX < 25 && tabY >= 0 && tabY < 24) {
+				normalGUI = true;
+				creative_playSound();
+			}
+			
+			if (normalGUI) {
+				super.mouseClicked(mouseX, mouseY, button);
+				return;
+			}
+			
+			tabX = ((int) mouseX - posX - 4) / 24;
+			tabY = (int) mouseY - posY + 21;
 			if (tabX >= 0 && tabX < 7 && tabY >= 0 && tabY < 24) {
 				tabIndex = tabX;
 				
