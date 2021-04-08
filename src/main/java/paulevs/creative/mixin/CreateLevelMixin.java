@@ -38,6 +38,6 @@ public abstract class CreateLevelMixin extends ScreenBase {
 	
 	private String creative_getButtonName() {
 		TranslationStorage var1 = TranslationStorage.getInstance();
-		return var1.translate(creative ? "selectWorld.creative": "selectWorld.survival");
+		return var1.translate(creative ? "title.creative:selectEorld.creative": "title.creative:selectEorld.survival");
 	}
 }

@@ -12,6 +12,7 @@
 		"AbstractClientPlayerMixin",
 		"PlayerInventoryMixin",
 		"CreateLevelMixin",
+		"GameOptionsMixin",
 		"MinecraftMixin"
 	],
 	"injectors": {

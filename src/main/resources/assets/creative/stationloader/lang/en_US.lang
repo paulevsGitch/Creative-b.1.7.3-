@@ -5,3 +5,6 @@ tab.minecraft_weapons.name=Minecraft Weapons
 tab.minecraft_resources.name=Minecraft Resources
 tab.minecraft_food.name=Minecraft Food
 tab.minecraft_other_items.name=Minecraft Items
+title.selectEorld.survival=Survival
+title.selectEorld.creative=Creative
+key.fly=Fly
