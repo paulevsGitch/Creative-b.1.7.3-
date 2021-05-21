@@ -9,14 +9,26 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import net.minecraft.block.Bed;
 import net.minecraft.block.BlockBase;
+import net.minecraft.block.Cake;
+import net.minecraft.block.DeadBush;
+import net.minecraft.block.Door;
+import net.minecraft.block.Fluid;
+import net.minecraft.block.MovingPiston;
+import net.minecraft.block.PistonHead;
+import net.minecraft.block.Portal;
+import net.minecraft.block.RedstoneDust;
+import net.minecraft.block.RedstoneRepeater;
+import net.minecraft.block.Sign;
+import net.minecraft.block.Torch;
+import net.minecraft.block.Trapdoor;
 import net.minecraft.item.ItemBase;
 import net.minecraft.item.ItemInstance;
 import net.minecraft.item.PlaceableBlock;
 import net.minecraft.item.armour.Armour;
 import net.minecraft.item.food.FoodBase;
 import net.minecraft.item.tool.Hoe;
-import net.minecraft.item.tool.Shears;
 import net.minecraft.item.tool.Sword;
 import net.minecraft.item.tool.ToolBase;
 import paulevs.creative.Creative;
@@ -52,38 +64,55 @@ public class CreativeTabs {
 		SimpleTab tabItems = register(new SimpleTab("minecraft_other_items", Creative.MOD_ID, ItemBase.slimeball));
 		
 		Set<Integer> resources = Sets.newHashSet();
-		resources.add(ItemBase.coal.id);
-		resources.add(ItemBase.diamond.id);
-		resources.add(ItemBase.goldIngot.id);
-		resources.add(ItemBase.ironIngot.id);
+		resources.add(ItemBase.glowstoneDust.id);
 		resources.add(ItemBase.redstoneDust.id);
-		resources.add(ItemBase.string.id);
+		resources.add(ItemBase.goldIngot.id);
 		resources.add(ItemBase.gunpowder.id);
+		resources.add(ItemBase.ironIngot.id);
+		resources.add(ItemBase.slimeball.id);
+		resources.add(ItemBase.diamond.id);
+		resources.add(ItemBase.feather.id);
+		resources.add(ItemBase.string.id);
+		resources.add(ItemBase.brick.id);
+		resources.add(ItemBase.flint.id);
+		resources.add(ItemBase.paper.id);
 		resources.add(ItemBase.stick.id);
 		resources.add(ItemBase.bone.id);
-		resources.add(ItemBase.flint.id);
+		resources.add(ItemBase.clay.id);
+		resources.add(ItemBase.coal.id);
 		
 		for (int i = 0; i < 2001; i++) {
 			if (ItemBase.byId[i] != null) {
 				ItemBase item = ItemBase.byId[i];
-				if (i < BlockBase.BY_ID.length && BlockBase.BY_ID[i] != null) {
-					if (BlockBase.BY_ID[i].isFullCube()) {
+				if (i < 256 && BlockBase.BY_ID[i] != null) {
+					BlockBase block = BlockBase.BY_ID[i];
+					
+					if (isInvalidBlock(block)) {
+						continue;
+					}
+					
+					if (block.isFullCube()) {
 						tabFullBlocks.addItemWithVariants(item);
 					}
 					else {
+						if (block == BlockBase.TALLGRASS) {
+							for (int meta = 0; meta < 3; meta++) {
+								tabOtherBlocks.addItem(new ItemInstance(item, 1, meta));
+							}
+						}
 						tabOtherBlocks.addItemWithVariants(item);
 					}
 				}
 				else if (item instanceof PlaceableBlock) {
 					tabOtherBlocks.addItemWithVariants(item);
 				}
-				else if (item instanceof ToolBase || item instanceof Hoe || item instanceof Shears) {
+				else if (isTool(item)) {
 					tabTools.addItemWithVariants(item);
 				}
-				else if (item instanceof Armour || item instanceof Sword) {
+				else if (isWeaponOrArmour(item)) {
 					tabWeapons.addItemWithVariants(item);
 				}
-				else if (item instanceof FoodBase) {
+				else if (isFood(item)) {
 					tabFood.addItemWithVariants(item);
 				}
 				else if (resources.contains(i)) {
@@ -94,6 +123,44 @@ public class CreativeTabs {
 				}
 			}
 		}
+	}
+	
+	private static boolean isTool(ItemBase item) {
+		return item instanceof ToolBase ||
+				item instanceof Hoe ||
+				item == ItemBase.flintAndSteel ||
+				item == ItemBase.fishingRod ||
+				item == ItemBase.shears ||
+				item == ItemBase.clock;
+	}
+	
+	private static boolean isWeaponOrArmour(ItemBase item) {
+		return item instanceof Armour || item instanceof Sword || item == ItemBase.bow || item == ItemBase.arrow;
+	}
+	
+	private static boolean isFood(ItemBase item) {
+		return item instanceof FoodBase ||
+				item == ItemBase.seeds ||
+				item == ItemBase.sugar ||
+				item == ItemBase.wheat ||
+				item == ItemBase.bowl ||
+				item == ItemBase.egg;
+	}
+	
+	private static boolean isInvalidBlock(BlockBase block) {
+		return  block instanceof RedstoneRepeater ||
+				block instanceof RedstoneDust ||
+				block instanceof MovingPiston ||
+				block instanceof PistonHead ||
+				block instanceof DeadBush ||
+				block instanceof Trapdoor ||
+				block instanceof Portal ||
+				block instanceof Fluid ||
+				block instanceof Torch ||
+				block instanceof Cake ||
+				block instanceof Door ||
+				block instanceof Sign ||
+				block instanceof Bed;
 	}
 	
 	public static void initTabs() {

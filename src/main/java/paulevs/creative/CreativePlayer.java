@@ -8,8 +8,4 @@ public interface CreativePlayer {
 	public boolean isFlying();
 	
 	public void setFlying(boolean flying);
-	
-	public int getJumpTicks();
-	
-	public void setJumpTicks(int ticks);
 }

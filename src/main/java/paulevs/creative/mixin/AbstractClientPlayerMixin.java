@@ -41,7 +41,7 @@ public abstract class AbstractClientPlayerMixin extends PlayerBase {
 				if (fly) {
 					AbstractClientPlayer client = (AbstractClientPlayer) (Object) this;
 					client.setPositionAndAngles(client.x, client.y - client.standingEyeHeight + 0.01, client.z, client.yaw, client.pitch);
-					client.velocityY = 0.001;
+					client.velocityY = Math.max(client.velocityY * 0.7, 0.01);
 				}
 				info.cancel();
 			}

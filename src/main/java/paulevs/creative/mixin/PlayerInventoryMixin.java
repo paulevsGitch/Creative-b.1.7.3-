@@ -226,8 +226,9 @@ public abstract class PlayerInventoryMixin extends ContainerBase {
 			return;
 		}
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		String name = ("" + TranslationStorage.getInstance().method_995(item.getTranslationKey())).trim();
-		creative_renderString(name);
+		String key = item.getTranslationKey();
+		String translated = TranslationStorage.getInstance().method_995(key);
+		creative_renderString(translated.isEmpty() ? key : translated);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
