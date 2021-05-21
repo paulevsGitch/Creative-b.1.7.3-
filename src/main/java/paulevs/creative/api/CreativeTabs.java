@@ -21,6 +21,7 @@ import net.minecraft.block.Portal;
 import net.minecraft.block.RedstoneDust;
 import net.minecraft.block.RedstoneRepeater;
 import net.minecraft.block.Sign;
+import net.minecraft.block.SugarCane;
 import net.minecraft.block.Torch;
 import net.minecraft.block.Trapdoor;
 import net.minecraft.item.ItemBase;
@@ -104,7 +105,15 @@ public class CreativeTabs {
 					}
 				}
 				else if (item instanceof PlaceableBlock) {
-					tabOtherBlocks.addItemWithVariants(item);
+					if (item == ItemBase.cake) {
+						tabFood.addItemWithVariants(item);
+					}
+					else if (item == ItemBase.sugarCanes) {
+						tabFood.addItemWithVariants(item);
+					}
+					else {
+						tabOtherBlocks.addItemWithVariants(item);
+					}
 				}
 				else if (isTool(item)) {
 					tabTools.addItemWithVariants(item);
@@ -152,6 +161,7 @@ public class CreativeTabs {
 				block instanceof RedstoneDust ||
 				block instanceof MovingPiston ||
 				block instanceof PistonHead ||
+				block instanceof SugarCane ||
 				block instanceof DeadBush ||
 				block instanceof Trapdoor ||
 				block instanceof Portal ||

@@ -3,6 +3,7 @@ package paulevs.creative;
 import net.minecraft.client.render.block.GrassColour;
 
 public class ColorHelper {
+	public static final String TESSELLATOR_TARGET = "Lnet/minecraft/client/render/Tessellator;start()V";
 	public static SimpleColor grassColor;
 	public static boolean renderGrassTop;
 	public static int intGrassColor;

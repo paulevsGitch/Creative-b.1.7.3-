@@ -14,14 +14,7 @@ import paulevs.creative.ColorHelper;
 
 @Mixin(class_556.class)
 public class Class556Mixin {
-	@Inject(
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/render/Tessellator;start()V",
-			ordinal = 0
-		),
-		method = "method_1862", cancellable = true
-	)
+	@Inject(at = @At(value = "INVOKE", target = ColorHelper.TESSELLATOR_TARGET, ordinal = 0), method = "method_1862", cancellable = true)
 	private void creative_fixItemColorInHand(Living player, ItemInstance item, CallbackInfo info) {
 		if (item.itemId == BlockBase.TALLGRASS.id && item.getDamage() > 0) {
 			float light = player.getBrightnessAtEyes(player.pitch);
