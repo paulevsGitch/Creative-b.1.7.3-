@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
+import paulevs.creative.ColorHelper;
 import paulevs.creative.api.CreativeTabs;
 import paulevs.creative.api.TabRegister;
 
@@ -16,5 +17,6 @@ public class MinecraftMixin {
 		CreativeTabs.initVanilla();
 		TabRegister.EVENT.getInvoker().registerTabs();
 		CreativeTabs.initTabs();
+		ColorHelper.init();
 	}
 }

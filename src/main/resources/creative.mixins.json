@@ -11,13 +11,15 @@
 		"ClientInteractionManagerMixin",
 		"AbstractClientPlayerMixin",
 		"PlayerInventoryMixin",
+		"TileRendererMixin",
 		"ItemRendererMixin",
 		"CreateLevelMixin",
 		"GameOptionsMixin",
 		"TallGrassMixin",
 		"LivingAccessor",
 		"MinecraftMixin",
-		"Class556Mixin"
+		"Class556Mixin",
+		"GrassMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

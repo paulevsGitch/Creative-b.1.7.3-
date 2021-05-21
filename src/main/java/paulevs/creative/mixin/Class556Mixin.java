@@ -25,9 +25,9 @@ public class Class556Mixin {
 	private void creative_fixItemColorInHand(Living player, ItemInstance item, CallbackInfo info) {
 		if (item.itemId == BlockBase.TALLGRASS.id && item.getDamage() > 0) {
 			float light = player.getBrightnessAtEyes(player.pitch);
-			float r = ColorHelper.GRASS_COLOR.r * light;
-			float g = ColorHelper.GRASS_COLOR.g * light;
-			float b = ColorHelper.GRASS_COLOR.b * light;
+			float r = ColorHelper.grassColor.r * light;
+			float g = ColorHelper.grassColor.g * light;
+			float b = ColorHelper.grassColor.b * light;
 			GL11.glColor3f(r, g, b);
 		}
 	}

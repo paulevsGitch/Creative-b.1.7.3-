@@ -28,9 +28,9 @@ public class ItemRendererMixin {
 	private void creative_fixItemColorInWorld(Item item, double x, double y, double z, float yaw, float pitch, CallbackInfo info) {
 		if (item.item.itemId == BlockBase.TALLGRASS.id && item.item.getDamage() > 0) {
 			float light = item.getBrightnessAtEyes(pitch);
-			float r = ColorHelper.GRASS_COLOR.r * light;
-			float g = ColorHelper.GRASS_COLOR.g * light;
-			float b = ColorHelper.GRASS_COLOR.b * light;
+			float r = ColorHelper.grassColor.r * light;
+			float g = ColorHelper.grassColor.g * light;
+			float b = ColorHelper.grassColor.b * light;
 			GL11.glColor3f(r, g, b);
 		}
 	}
@@ -45,9 +45,9 @@ public class ItemRendererMixin {
 	)
 	private void creative_fixItemColorInGUI(int x, int y, int u, int v, int width, int height, CallbackInfo info) {
 		if ((u == GRASS_UV1.x && v == GRASS_UV1.z) || (u == GRASS_UV2.x && v == GRASS_UV2.z)) {
-			float r = ColorHelper.GRASS_COLOR.r;
-			float g = ColorHelper.GRASS_COLOR.g;
-			float b = ColorHelper.GRASS_COLOR.b;
+			float r = ColorHelper.grassColor.r;
+			float g = ColorHelper.grassColor.g;
+			float b = ColorHelper.grassColor.b;
 			GL11.glColor3f(r, g, b);
 		}
 	}
